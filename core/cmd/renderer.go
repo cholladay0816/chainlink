@@ -87,6 +87,8 @@ func (rt RendererTable) Render(v interface{}) error {
 		return rt.renderOCRKeys([]ocrkey.EncryptedKeyBundle{*typed})
 	case *[]ocrkey.EncryptedKeyBundle:
 		return rt.renderOCRKeys(*typed)
+	case *[]Job:
+		return rt.renderJobsV2(*typed)
 	default:
 		return fmt.Errorf("unable to render object of type %T: %v", typed, typed)
 	}
@@ -99,6 +101,16 @@ func (rt RendererTable) renderJobs(jobs []models.JobSpec) error {
 	}
 
 	render("Jobs", table)
+	return nil
+}
+
+func (rt RendererTable) renderJobsV2(jobs []Job) error {
+	table := rt.newTable([]string{"ID", "Name", "Type", "Tasks"})
+	for _, j := range jobs {
+		table.Append(j.ToRow())
+	}
+
+	render("Jobs (V2)", table)
 	return nil
 }
 
